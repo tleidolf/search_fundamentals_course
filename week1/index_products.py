@@ -85,7 +85,15 @@ def get_opensearch():
     port = 9200
     auth = ('admin', 'admin')
     #### Step 2.a: Create a connection to OpenSearch
-    client = None
+    client = OpenSearch(
+        hosts=[{'host': host, 'port': port}],
+        http_compress=True,  # enables gzip compression for request bodies
+        http_auth=auth,
+        use_ssl=True,
+        verify_certs=False,
+        ssl_assert_hostname=False,
+        ssl_show_warn=False,
+    )
     return client
 
 
@@ -103,22 +111,37 @@ def index_file(file, index_name):
             xpath_expr = mappings[idx]
             key = mappings[idx + 1]
             doc[key] = child.xpath(xpath_expr)
-        #print(doc)
+        # print(doc)
         if 'productId' not in doc or len(doc['productId']) == 0:
             continue
         #### Step 2.b: Create a valid OpenSearch Doc and bulk index 2000 docs at a time
-        the_doc = None
+         # Construct a document for bulk indexing
+        the_doc = doc
+        doc_id = the_doc["sku"]
+        
+        client.index(
+            index=index_name,
+            body=the_doc,
+            id=doc_id,
+            refresh=True
+        )
         docs.append(the_doc)
 
     return docs_indexed
 
 @click.command()
 @click.option('--source_dir', '-s', help='XML files source directory')
+# @click.option('--source_dir', '-s', default="../datasets/product_data/products", help='XML files source directory')
 @click.option('--index_name', '-i', default="bbuy_products", help="The name of the index to write to")
 @click.option('--workers', '-w', default=8, help="The number of workers to use to process files")
 def main(source_dir: str, index_name: str, workers: int):
 
     files = glob.glob(source_dir + "/*.xml")
+    # files = glob.glob(source_dir + "/products_00*.xml")
+    # print(files)
+    
+    # index_file(files[0], index_name)
+
     docs_indexed = 0
     start = perf_counter()
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
