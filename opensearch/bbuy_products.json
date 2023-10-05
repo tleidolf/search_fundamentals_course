@@ -234,6 +234,7 @@
         },
         "longDescription": {
           "type": "text",
+          "analyzer": "english",
           "fields": {
             "keyword": {
               "type": "keyword",
@@ -270,6 +271,7 @@
         },
         "name": {
           "type": "text",
+          "analyzer": "english",
           "fields": {
             "keyword": {
               "type": "keyword",
@@ -314,13 +316,7 @@
           }
         },
         "regularPrice": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "float"
         },
         "relatedProducts": {
           "type": "text",
@@ -344,31 +340,13 @@
           }
         },
         "salesRankLongTerm": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "long"
         },
         "salesRankMediumTerm": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "long"
         },
         "salesRankShortTerm": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "long"
         },
         "shippingCost": {
           "type": "text",
@@ -390,6 +368,7 @@
         },
         "shortDescription": {
           "type": "text",
+          "analyzer": "english",
           "fields": {
             "keyword": {
               "type": "keyword",

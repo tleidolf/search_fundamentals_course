@@ -118,14 +118,27 @@ def index_file(file, index_name):
          # Construct a document for bulk indexing
         the_doc = doc
         doc_id = the_doc["sku"]
+        docs.append({'_index': index_name, '_id':doc['sku'][0],'_source':doc})
+
+        docs_indexed +=1
+        if docs_indexed % 2000 == 0:
+            bulk(client, docs, request_timeout=60)
+            docs = []
+    if len(docs) > 0:
+        bulk(client, docs, request_timeout=60)
+    
         
-        client.index(
-            index=index_name,
-            body=the_doc,
-            id=doc_id,
-            refresh=True
-        )
-        docs.append(the_doc)
+        #######-------------------
+        # I used this for testing one by one
+        # the_doc = doc
+        # doc_id = the_doc["sku"]
+        # client.index(
+        #     index=index_name,
+        #     body=the_doc,
+        #     id=doc_id,
+        #     refresh=True
+        # )
+        # docs.append(the_doc)
 
     return docs_indexed
 
